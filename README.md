@@ -9,6 +9,10 @@
 3. IntelliJ
 4. Maven
 
+### 💡 Design Consideration
+Message Queue is used for asychronous processing of transaction request, so as to handle high load of transfer requests
+
+Redis distributed lock is used to prevent concurrent writes on the db on the source and destination account
 
 ### 🛠️ Setup Instructions
 
