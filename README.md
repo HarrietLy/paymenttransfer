@@ -13,15 +13,14 @@
 ### 💡 Assumptions
 - The application may receive many transfer requests at the same time, for different account pairs, hence a non-blocking
 api for submitting transaction is used
-- The application is deployed in multiple replicas, which necessitates the use of a distributed lock 
-as opposed to an object lock within the jvm or database lock
 - Multiple threads may want to modify the balance of the same account at the same time. To prevent race condition, 
 we need to lock the accountid to ensure only one thread can modify that account at one time
+- The application can be deployed in multiple replicas, which necessitates the use of a distributed lock as opposed to an object lock within the jvm
 
 ### 💡 Design Consideration
 - Message Queue is used for asychronous processing of transaction request, so as to handle high load of transfer requests
 - Redis distributed lock is used to prevent concurrent writes on the db on the source and destination account
-- @Transaction annotation by Spring is used to annotate methods where multiple db writes happen, to ensure if any partial 
+- @Transaction annotation by Spring is used to annotate methods where multiple db writes happen, to ensure that any partial 
 database write is rolled back in case of exception.
 
 ### 🛠️ Setup Instructions
