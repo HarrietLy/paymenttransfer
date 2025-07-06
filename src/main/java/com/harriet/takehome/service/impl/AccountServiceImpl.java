@@ -111,14 +111,18 @@ public class AccountServiceImpl implements AccountService {
             logger.error("account creation request has null accountId");
             throw new RuntimeException("accountId is null");
         }
+        if (accountCreationRequest.getAccountId() <=0) {
+            logger.error("accountId is negative");
+            throw new RuntimeException("accountId is negative");
+        }
         boolean accountExist =  accountRepository.existsById(accountCreationRequest.getAccountId());
         if (accountExist) {
             logger.error("account creation request uses an existing account");
             throw new RuntimeException("account already exists");
         }
         BigDecimal initialBalInBigDecimal = new BigDecimal(accountCreationRequest.getInitialBalance());
-        if (initialBalInBigDecimal.compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("balance must not be negative");
+        if (initialBalInBigDecimal.compareTo(BigDecimal.ZERO) < 0 ) {
+            throw new RuntimeException("balance is out of range");
         }
     }
 

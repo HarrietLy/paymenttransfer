@@ -72,6 +72,6 @@ class AccountServiceImplTest {
         RuntimeException thrown = assertThrows(RuntimeException.class,
                 () -> accountService.createNewAccount(request));
 
-        assertEquals("balance must not be negative", thrown.getMessage());
+        assertEquals("balance is out of range", thrown.getMessage());
     }
 }
