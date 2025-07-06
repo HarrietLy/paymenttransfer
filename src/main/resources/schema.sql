@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS account (
                          account_id BIGINT PRIMARY KEY,
                          current_balance NUMERIC(40, 20) NOT NULL,
-                         created_time TIMESTAMP NOT NULL
+                         created_time TIMESTAMP NOT NULL,
+                         last_updated_time TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS transaction (
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS transaction (
                          transfer_amount NUMERIC(40, 20) NOT NULL,
                          transaction_status VARCHAR(30) NOT NULL,
                          inserted_time TIMESTAMP NOT NULL,
-                         last_updated_time TIMESTAMP NOT NULL,
+                         last_updated_time TIMESTAMP,
                          constraint fk_source_account FOREIGN KEY (source_account_id) REFERENCES account(account_id),
                          constraint fk_destination_account FOREIGN KEY (destination_account_id) REFERENCES account(account_id)
 );

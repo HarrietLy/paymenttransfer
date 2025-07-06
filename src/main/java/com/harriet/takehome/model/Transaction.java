@@ -1,18 +1,18 @@
 package com.harriet.takehome.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name="transaction")
-public class Transaction {
+public class Transaction implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
 
     private Long sourceAccountId;
@@ -23,6 +23,14 @@ public class Transaction {
     private LocalDateTime lastUpdatedTime;
 
     public Transaction() {}
+
+    public Long getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
 
     public Long getSourceAccountId() {
         return sourceAccountId;
@@ -75,7 +83,8 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "sourceAccountId=" + sourceAccountId +
+                "transactionId=" + transactionId +
+                ", sourceAccountId=" + sourceAccountId +
                 ", destinationAccountId=" + destinationAccountId +
                 ", transferAmount=" + transferAmount +
                 ", transactionStatus='" + transactionStatus + '\'' +
@@ -90,6 +99,7 @@ public class Transaction {
         if (!(o instanceof Transaction)) return false;
         Transaction that = (Transaction) o;
         return sourceAccountId == that.sourceAccountId &&
+                transactionId == that.transactionId &&
                 destinationAccountId == that.destinationAccountId &&
                 Objects.equals(transferAmount, that.transferAmount) &&
                 Objects.equals(transactionStatus, that.transactionStatus) &&
@@ -99,6 +109,6 @@ public class Transaction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceAccountId, destinationAccountId, transferAmount, transactionStatus, insertedTime, lastUpdatedTime);
+        return Objects.hash(transactionId, sourceAccountId, destinationAccountId, transferAmount, transactionStatus, insertedTime, lastUpdatedTime);
     }
 }
