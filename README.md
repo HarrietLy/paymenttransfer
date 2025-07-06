@@ -23,7 +23,7 @@ docker pull postgres:17
 
 docker run --name harriet-postgres -e POSTGRES_USER=harriet -e POSTGRES_PASSWORD=harriet -e POSTGRES_DB=bank -p 5432:5432 postgres:17
 
-docker run --detach --name harrietmq -p 61616:61616 -p 8161:8161 --rm apache/activemq-artemis:latest-alpine
+docker run --detach --name harrietmq -p 61616:61616 -p 8161:8161 apache/activemq-artemis:latest-alpine
 
 docker pull redis
 
