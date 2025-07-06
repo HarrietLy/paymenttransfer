@@ -22,8 +22,6 @@ spring:
 queue:
   transaction-request: transaction.request.queue
 
-settings:
-  balance:
-    maximum: 10e20
-  transfer:
-    maximum: 1000000
+#settings:
+#  transfer:
+#    maximum: 1000000
