@@ -8,6 +8,8 @@ import com.harriet.takehome.service.TransactionService;
 import com.harriet.takehome.vo.TransactionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,10 +21,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+    private final JmsTemplate jmsTemplate;
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepository) {
+
+    @Value("${queue.transaction-request}")
+    private String transactionQueue;
+
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepository, JmsTemplate jmsTemplate) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.jmsTemplate = jmsTemplate;
     }
 
     @Override
@@ -32,6 +40,12 @@ public class TransactionServiceImpl implements TransactionService {
         validateTransationRequest(transactionRequest);
         Transaction transaction = transactionRepository.save(convertTransactionRequestToTransaction(transactionRequest));
         logger.info("transaction request {} is recorded to db", transaction);
+
+        Long createdTransactionId = transaction.getTransactionId();
+        logger.info ("starting to send the transaction request {} to transaction queue", transaction);
+
+        //todo sent jms correlationid ?
+        jmsTemplate.convertAndSend(transactionQueue, transaction);
     }
 
     private Transaction convertTransactionRequestToTransaction(TransactionRequest transactionRequest) {

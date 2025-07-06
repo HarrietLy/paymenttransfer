@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/v1/accounts")
+@RequestMapping("/api/v1/accounts")
 @RestController
 @Tag(name ="Account Controller")
 public class AccountController {

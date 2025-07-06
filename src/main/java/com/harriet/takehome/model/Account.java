@@ -1,8 +1,6 @@
 package com.harriet.takehome.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,6 +16,7 @@ public class Account {
     private BigDecimal currentBalance;
 
     private LocalDateTime createdTime;
+    private LocalDateTime lastUpdatedTime;
 
     public Account() {}
     public Long getAccountId() {
@@ -45,12 +44,21 @@ public class Account {
         this.createdTime = createdTime;
     }
 
+    public LocalDateTime getLastUpdatedTime() {
+        return lastUpdatedTime;
+    }
+
+    public void setLastUpdatedTime(LocalDateTime lastUpdatedTime) {
+        this.lastUpdatedTime = lastUpdatedTime;
+    }
+
     @Override
     public String toString() {
         return "Account{" +
                 "accountId=" + accountId +
                 ", currentBalance=" + currentBalance +
                 ", createdTime=" + createdTime +
+                ", lastUpdatedTime=" + lastUpdatedTime +
                 '}';
     }
 
@@ -61,11 +69,12 @@ public class Account {
         Account account = (Account) o;
         return Objects.equals(accountId, account.accountId) &&
                 Objects.equals(currentBalance, account.currentBalance) &&
+                Objects.equals(lastUpdatedTime, account.lastUpdatedTime) &&
                 Objects.equals(createdTime, account.createdTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountId, currentBalance, createdTime);
+        return Objects.hash(accountId, currentBalance, createdTime, lastUpdatedTime);
     }
 }

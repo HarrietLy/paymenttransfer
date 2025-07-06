@@ -3,11 +3,12 @@ package com.harriet.takehome.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Schema(description = "Request object for submitting a transfer request")
-public class TransactionRequest {
+public class TransactionRequest implements Serializable {
 
     @JsonProperty("source_account_id")
     private Long sourceAccount;

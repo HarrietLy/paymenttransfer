@@ -3,7 +3,6 @@ package com.harriet.takehome.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Schema(description = "Request object for creating a new account")
@@ -13,7 +12,7 @@ public class AccountCreationRequest {
     private Long accountId;
 
     @JsonProperty("initial_balance")
-    private String intialBalance;
+    private String initialBalance;
 
     public AccountCreationRequest() {}
 
@@ -25,19 +24,19 @@ public class AccountCreationRequest {
         this.accountId = accountId;
     }
 
-    public String getIntialBalance() {
-        return intialBalance;
+    public String getInitialBalance() {
+        return initialBalance;
     }
 
-    public void setIntialBalance(String intialBalance) {
-        this.intialBalance = intialBalance;
+    public void setInitialBalance(String initialBalance) {
+        this.initialBalance = initialBalance;
     }
 
     @Override
     public String toString() {
         return "AccountCreationRequest{" +
                 "accountId=" + accountId +
-                ", intialBalance=" + intialBalance +
+                ", initialBalance=" + initialBalance +
                 '}';
     }
 
@@ -47,11 +46,11 @@ public class AccountCreationRequest {
         if (!(o instanceof AccountCreationRequest)) return false;
         AccountCreationRequest that = (AccountCreationRequest) o;
         return accountId == that.accountId &&
-                Objects.equals(intialBalance, that.intialBalance);
+                Objects.equals(initialBalance, that.initialBalance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountId, intialBalance);
+        return Objects.hash(accountId, initialBalance);
     }
 }

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/transactions")
+@RequestMapping("/api/v1/transactions")
 @Tag(name="Transaction Controller")
 public class TransactionController {
 
