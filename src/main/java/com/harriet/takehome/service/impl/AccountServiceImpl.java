@@ -8,8 +8,11 @@ import com.harriet.takehome.repository.AccountActivityRepository;
 import com.harriet.takehome.repository.AccountRepository;
 import com.harriet.takehome.service.AccountService;
 import com.harriet.takehome.vo.AccountCreationRequest;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -52,17 +56,38 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Autowired
+    private RedissonClient redissonClient;
     @Transactional
     @Override
-    public void processTransaction(Transaction transaction) {
-        //use Redis to acquire lock to both accounts to prevent concurrent modification of the same account by concurrent thread from either the same node or another node
+    public void processTransaction(Transaction transaction) throws InterruptedException {
+        // https://redis.io/glossary/redis-lock/
         Long sourceAccountId = transaction.getSourceAccountId();
         Long destinationAccountId = transaction.getDestinationAccountId();
         BigDecimal amount = transaction.getTransferAmount();
-
-        addAccountActivityAndUpdateBalance(sourceAccountId, amount.negate(), transaction.getTransactionId());
-        addAccountActivityAndUpdateBalance(destinationAccountId, amount, transaction.getTransactionId());
-
+        Long accountIdToLock1 = sourceAccountId< destinationAccountId ? sourceAccountId : destinationAccountId;
+        Long accountIdToLock2 = sourceAccountId< destinationAccountId ? destinationAccountId : sourceAccountId;
+        String lock1 = "account-lock-" + accountIdToLock1;
+        String lock2 = "account-lock-" + accountIdToLock2;
+        RLock Rlock1 = redissonClient.getLock(lock1);
+        RLock Rlock2 = redissonClient.getLock(lock2);
+        if(Rlock1.tryLock(15,10, TimeUnit.SECONDS)){
+            try {
+                if (Rlock2.tryLock(15,10, TimeUnit.SECONDS)){
+                    try {
+                        logger.info("accessing critical section modifying account balance");
+                        addAccountActivityAndUpdateBalance(sourceAccountId, amount.negate(), transaction.getTransactionId());
+                        addAccountActivityAndUpdateBalance(destinationAccountId, amount, transaction.getTransactionId());
+                        return;
+                    } finally {
+                        Rlock2.unlock();
+                    }
+                }
+            } finally {
+                Rlock1.unlock();
+            }
+        }
+        throw new RuntimeException("cannot acquire lock to update account");
     }
 
     @Transactional

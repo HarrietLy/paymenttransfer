@@ -4,6 +4,7 @@ import com.harriet.takehome.constant.TransactionStatus;
 import com.harriet.takehome.model.Transaction;
 import com.harriet.takehome.repository.AccountRepository;
 import com.harriet.takehome.repository.TransactionRepository;
+import com.harriet.takehome.service.AccountService;
 import com.harriet.takehome.service.TransactionService;
 import com.harriet.takehome.vo.TransactionRequest;
 import org.slf4j.Logger;
@@ -23,20 +24,20 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final JmsTemplate jmsTemplate;
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
+    private final AccountService accountService;
 
     @Value("${queue.transaction-request}")
     private String transactionQueue;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepository, JmsTemplate jmsTemplate) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountRepository, JmsTemplate jmsTemplate, AccountService accountService) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.jmsTemplate = jmsTemplate;
+        this.accountService = accountService;
     }
 
     @Override
     public void processTransaction(TransactionRequest transactionRequest) {
-        //serialize transactionrequest and send it to message queue,
-        // and also add a new row to transaction table staus 'REQUESTED'
         validateTransationRequest(transactionRequest);
         Transaction transaction = transactionRepository.save(convertTransactionRequestToTransaction(transactionRequest));
         logger.info("transaction request {} is recorded to db", transaction);

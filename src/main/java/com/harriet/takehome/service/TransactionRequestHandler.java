@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Component
 public class TransactionRequestHandler {
@@ -28,15 +29,19 @@ public class TransactionRequestHandler {
     public void processTransaction(Transaction transaction) {
         logger.info("received transaction request {} from the queue", transaction);
         transaction.setTransactionStatus(TransactionStatus.PROCESSING.name());
+        transaction.setLastUpdatedTime(LocalDateTime.now());
         transactionRepository.save(transaction);
 
         try {
+//            Thread.sleep(5000); for testing
             accountService.processTransaction(transaction);
             transaction.setTransactionStatus(TransactionStatus.SUCCESS.name());
+            logger.info("process transaction success");
         } catch(Exception e){
-            logger.error(e.getMessage());
+            logger.error("processing transaction failed with error {}" , e.getMessage());
             transaction.setTransactionStatus(TransactionStatus.FAILED.name());
         }
+        transaction.setLastUpdatedTime(LocalDateTime.now());
         transactionRepository.save(transaction);
     }
 

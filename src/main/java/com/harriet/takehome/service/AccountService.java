@@ -13,5 +13,5 @@ public interface AccountService {
 
     AccountBalanceDTO getAccountBalance(long accountId);
 
-    void processTransaction(Transaction transaction);
+    void processTransaction(Transaction transaction) throws InterruptedException;
 }
